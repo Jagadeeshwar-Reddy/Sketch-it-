@@ -2,13 +2,13 @@
 //  MJRAppDelegate.m
 //  Paint it!
 //
-//  Created by Giriprasad Reddy on 27/03/13.
+//  Created by Jagadeeshwar Reddy on 27/03/13.
 //  Copyright (c) 2013 Let's Build. All rights reserved.
 //
 
 #import "MJRAppDelegate.h"
 
-#import "MJRViewController.h"
+#import "MJRSplashScreenVC.h"
 
 @implementation MJRAppDelegate
 
@@ -17,11 +17,11 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        self.viewController = [[MJRViewController alloc] initWithNibName:@"MJRViewController_iPhone" bundle:nil];
+        self.splashScreen = [[MJRSplashScreenVC alloc] initWithNibName:@"MJRSplashScreenVC" bundle:nil];
     } else {
-        self.viewController = [[MJRViewController alloc] initWithNibName:@"MJRViewController_iPad" bundle:nil];
+        self.splashScreen = [[MJRSplashScreenVC alloc] initWithNibName:@"MJRSplashScreenVC_iPad" bundle:nil];
     }
-    self.window.rootViewController = self.viewController;
+    self.window.rootViewController = self.splashScreen;
     [self.window makeKeyAndVisible];
     return YES;
 }
