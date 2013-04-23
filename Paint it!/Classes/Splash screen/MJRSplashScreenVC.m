@@ -64,7 +64,7 @@
     _main_title.innerShadowOffset = CGSizeMake(1.0f, 1.0f);
 
     
-    _author_label.shadowColor = [UIColor colorWithHue:.580555 saturation:0.31 brightness:0.90 alpha:1.0];
+    /*_author_label.shadowColor = [UIColor colorWithHue:.580555 saturation:0.31 brightness:0.90 alpha:1.0];
     _author_label.shadowOffset = CGSizeMake(1.0f, 1.0f);
     _author_label.shadowBlur = 1.0f;
     _author_label.innerShadowBlur = 2.0f;
@@ -78,7 +78,7 @@
     _copyright_label.innerShadowBlur = 2.0f;
     _copyright_label.innerShadowColor = [UIColor colorWithHue:.58333 saturation:0.50 brightness:0.62 alpha:1.0];
     _copyright_label.innerShadowOffset = CGSizeMake(1.0f, 1.0f);
-
+*/
     /*
     //demonstrate inner shadow
     label2.shadowColor = [UIColor colorWithWhite:1.0f alpha:0.8f];
@@ -130,7 +130,7 @@
             [UIView animateWithDuration:1.0 animations:^{
                 _copyright_label.alpha=1.0;
             } completion:^(BOOL finished) {
-                [self movetohomescreen];
+                [self performSelector:@selector(movetohomescreen) withObject:nil afterDelay:2.0];
             }];
         }];
     }];
@@ -144,8 +144,8 @@
     // Step 2: Configure an options dictionary for the PKRevealController if necessary - in most cases the default behaviour should suffice. See PKRevealController.h for more option keys.
     
      NSDictionary *options = @{
-     PKRevealControllerAllowsOverdrawKey : [NSNumber numberWithBool:YES],
-     PKRevealControllerDisablesFrontViewInteractionKey : [NSNumber numberWithBool:YES],
+     //PKRevealControllerAllowsOverdrawKey : [NSNumber numberWithBool:YES],
+     //PKRevealControllerDisablesFrontViewInteractionKey : [NSNumber numberWithBool:YES],
      PKRevealControllerRecognizesPanningOnFrontViewKey : [NSNumber numberWithBool:NO]
      };
 

@@ -9,7 +9,7 @@
 #import "MJRMainMenuVC.h"
 #import "MJRMenuCell.h"
 
-#define kMenuItems [NSArray arrayWithObjects:@"Board Stack",@"Gallery",@"Shapes", nil]
+#define kMenuItems [NSArray arrayWithObjects:@"Pages",@"Gallery",@"Shapes", nil]
 @interface MJRMainMenuVC ()
 
 @end
@@ -116,6 +116,11 @@
      // Pass the selected object to the new view controller.
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
+    
+    
+    [self.revealController showViewController:self.revealController.frontViewController animated:YES completion:^(BOOL finished) {
+        
+    }];
 }
 
 @end

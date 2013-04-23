@@ -60,23 +60,31 @@
 }*/
 - (void)drawRect:(CGRect)rect
 {
-    //blue   0.7, 0.85, 0.93, 1.0
-    //67,130,167
-    CGFloat colors [] = {
-        1.0, 1.0, 1.0, 1.0,
-        0.26, 0.50, 0.643, 1.0 //30,144,25 //0.11, 0.56, 0.098, 1.0
-    };
-    CGColorSpaceRef baseSpace = CGColorSpaceCreateDeviceRGB();
-    CGGradientRef gradient = CGGradientCreateWithColorComponents(baseSpace, colors, NULL, 2);
-    CGColorSpaceRelease(baseSpace), baseSpace = NULL;
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSaveGState(context);
-    CGContextAddRect(context, rect);
-    CGContextClip(context);
-    CGContextDrawRadialGradient(context, gradient, self.center, 0.0f, self.center, self.frame.size.width, kCGGradientDrawsBeforeStartLocation);
-    CGGradientRelease(gradient), gradient = NULL;
-    CGContextRestoreGState(context);
-}
+    NSTimeInterval duration = 5.0; // slow things down for ease of debugging
+    [UIView animateWithDuration:duration animations:^{
+        [CATransaction begin];
+        [CATransaction setAnimationDuration:duration];
+        
+        //blue   0.7, 0.85, 0.93, 1.0
+        //67,130,167
+        CGFloat colors [] = {
+            1.0, 1.0, 1.0, 1.0,
+            0.26, 0.50, 0.643, 1.0 //30,144,25 //0.11, 0.56, 0.098, 1.0
+        };
+        CGColorSpaceRef baseSpace = CGColorSpaceCreateDeviceRGB();
+        CGGradientRef gradient = CGGradientCreateWithColorComponents(baseSpace, colors, NULL, 2);
+        CGColorSpaceRelease(baseSpace), baseSpace = NULL;
+        CGContextRef context = UIGraphicsGetCurrentContext();
+        CGContextSaveGState(context);
+        CGContextAddRect(context, rect);
+        CGContextClip(context);
+        CGContextDrawRadialGradient(context, gradient, self.center, 0.0f, self.center, self.frame.size.width, kCGGradientDrawsBeforeStartLocation);
+        CGGradientRelease(gradient), gradient = NULL;
+        CGContextRestoreGState(context);
 
+        
+        [CATransaction commit];
+    }];
+}
 
 @end

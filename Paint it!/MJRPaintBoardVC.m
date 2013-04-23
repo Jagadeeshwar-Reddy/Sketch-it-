@@ -7,14 +7,26 @@
 //
 
 #import "MJRPaintBoardVC.h"
+#import "DrawingBoard.h"
 
 
 #define UIViewAutoresizingFlexibleAll (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight |    UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin)
 
+typedef enum ColorPicker {
+    ColorPickerForBrush = 0 ,
+    ColorPickerForBackground
+}ColorPickerMode;
 
 @interface MJRPaintBoardVC (){
     BOOL isCurlStarted;
+    ColorPickerMode clrpkr_mode;
+        
+    CGFloat curr_brush_width;
 }
+
+@property (nonatomic, strong) UIColor *curr_bg_color;
+@property (nonatomic, strong) UIColor *curr_brush_color;
+
 @end
 
 @implementation MJRPaintBoardVC
@@ -37,7 +49,6 @@
     
     _settings_view.backgroundColor=[UIColor colorWithPatternImage:[UIImage imageNamed:@"pattern_bg"]];
     
-    
     UIImage *revealImagePortrait = [UIImage imageNamed:@"reveal_menu_icon_portrait"];
     UIImage *revealImageLandscape = [UIImage imageNamed:@"reveal_menu_icon_landscape"];
     if (self.navigationController.revealController.type & PKRevealControllerTypeLeft)
@@ -45,6 +56,23 @@
         self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:revealImagePortrait landscapeImagePhone:revealImageLandscape style:UIBarButtonItemStylePlain target:self action:@selector(showLeftView:)];
     }
 
+    [self configureAwesomeMenuButton];
+    
+    _selected_bg_color_indicator.backgroundColor=kDefaultBackgroundColor;
+    [self setupShadow:_selected_bg_color_indicator.layer];
+    
+    _selected_brush_color_indicator.backgroundColor=kDefaultBrushColor;
+    [self setupShadow:_selected_brush_color_indicator.layer];
+    
+    curr_brush_width=kDefaultBrushWidth;
+    
+    [(DrawingBoard *)self.view setLineColor:kDefaultBrushColor.CGColor];
+    [(DrawingBoard *)self.view setLineWidth:curr_brush_width];
+    [(DrawingBoard *)self.view setRenderPathMode:kToolPen];
+}
+
+#pragma mark - Helpers
+-(void)configureAwesomeMenuButton{
     
     UIImage *storyMenuItemImage = [UIImage imageNamed:@"bg-menuitem.png"];
     UIImage *storyMenuItemImagePressed = [UIImage imageNamed:@"bg-menuitem-highlighted.png"];
@@ -76,7 +104,7 @@
     CGRect menuItem_position=self.view.frame;
     menuItem_position.origin.y-=60;
     AwesomeMenu *menu = [[AwesomeMenu alloc] initWithFrame:menuItem_position menus:menus];
-
+    
     menu.menuWholeAngle = M_PI/1.5;
 	// customize menu
 	/*
@@ -88,11 +116,23 @@
      menu.nearRadius = 50.0f;
      */
     
-    menu.startPoint = CGPointMake(35.0, 440.0);
+    menu.startPoint = CGPointMake(30.0, 445.0);
 	
     menu.delegate = self;
     
     [self.view addSubview:menu];
+    
+    [menu setAutoresizingMask:UIViewAutoresizingFlexibleTopMargin];
+    
+}
+- (void) setupShadow:(CALayer *)layer {
+    layer.cornerRadius = 6.0;
+    layer.shadowColor = [UIColor blackColor].CGColor;
+    layer.shadowOpacity = 0.8;
+    layer.shadowOffset = CGSizeMake(0, 2);
+    CGRect rect = layer.frame;
+    rect.origin = CGPointZero;
+    layer.shadowPath = [UIBezierPath bezierPathWithRoundedRect:rect cornerRadius:layer.cornerRadius].CGPath;
 }
 #pragma mark - Autorotation
 
@@ -145,7 +185,24 @@
 
 - (void)AwesomeMenu:(AwesomeMenu *)menu didSelectIndex:(NSInteger)idx
 {
-    NSLog(@"Select the index : %d",idx);
+    
+    switch (idx) {
+        case 0:
+            [(DrawingBoard *)self.view setRenderPathMode:kToolPen];
+            MJRDbugLog(@"Selected tool : pen");
+            break;
+        case 1:
+            [(DrawingBoard *)self.view setRenderPathMode:kToolEraser];
+            MJRDbugLog(@"Selected tool : Eraser");
+            break;
+        case 2:
+            [(DrawingBoard *)self.view setBoardImage:nil];
+            MJRDbugLog(@"Selected tool : Clear board");
+            break;
+        default:
+            MJRDbugLog(@"Select the index : %d",idx);
+            break;
+    }
 }
 - (void)AwesomeMenuDidFinishAnimationClose:(AwesomeMenu *)menu {
     NSLog(@"Menu was closed!");
@@ -153,6 +210,9 @@
 - (void)AwesomeMenuDidFinishAnimationOpen:(AwesomeMenu *)menu {
     NSLog(@"Menu is open!");
 }
+
+
+#pragma mark IBAction methods
 
 - (IBAction)openpaintSettings:(id)sender {
 
@@ -194,4 +254,45 @@
     isCurlStarted = NO;
 }
 
+
+#pragma mark -
+#pragma mark Paint settings view
+
+- (IBAction)pickColor:(id)sender {
+    clrpkr_mode=([sender tag]==1 ? ColorPickerForBrush : ColorPickerForBackground);
+    NEOColorPickerViewController *controller = [[NEOColorPickerViewController alloc] init];
+    controller.delegate = self;
+    controller.selectedColor = ([sender tag]==1 ? self.curr_brush_color : self.curr_bg_color);
+    controller.title = @"Pick your choice";
+	UINavigationController* navVC = [[UINavigationController alloc] initWithRootViewController:controller];
+    
+    [self presentViewController:navVC animated:YES completion:nil];
+}
+
+- (IBAction)brushWidthChanged:(UISlider *)sender {
+    curr_brush_width=sender.value;
+    _configured_slider_value.text=[NSString stringWithFormat:@"%.1f",curr_brush_width];
+    [(DrawingBoard *)self.view setLineWidth:curr_brush_width];
+}
+#pragma mark ColorPickerDelegate
+- (void) colorPickerViewController:(NEOColorPickerBaseViewController *)controller didSelectColor:(UIColor *)color {
+    // Configure to selected color.
+    if (clrpkr_mode==ColorPickerForBackground) {
+        self.curr_bg_color = color;
+        _selected_bg_color_indicator.backgroundColor = color;
+        self.view.backgroundColor = color;
+    }
+    else if (clrpkr_mode == ColorPickerForBrush){
+        self.curr_brush_color = color;
+        _selected_brush_color_indicator.backgroundColor = color;
+        
+        [(DrawingBoard *)self.view setLineColor:color.CGColor];
+
+    }
+    
+    [controller dismissViewControllerAnimated:YES completion:nil];
+}
+- (void) colorPickerViewControllerDidCancel:(NEOColorPickerBaseViewController *)controller{
+    [controller dismissViewControllerAnimated:YES completion:nil];
+}
 @end
