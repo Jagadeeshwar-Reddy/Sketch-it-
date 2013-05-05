@@ -59,6 +59,9 @@
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect
 {
+    CGContextRef currentContext = UIGraphicsGetCurrentContext();
+    CGContextSetFillColorWithColor(currentContext, self.backgroundColor.CGColor);
+    CGContextFillRect(currentContext, rect);
     if (_backgroundImage) {
         _backgroundImage = [_backgroundImage resizedImageToFitInSize:rect.size scaleIfSmaller:YES];
         [_backgroundImage drawAtPoint:rect.origin];
@@ -136,6 +139,9 @@
 {
     UIGraphicsBeginImageContextWithOptions(self.frame.size, NO, 0.0);
     CGContextRef currentContext = UIGraphicsGetCurrentContext();
+    CGContextSetFillColorWithColor(currentContext, self.backgroundColor.CGColor);
+    CGContextFillRect(currentContext, self.bounds);
+
     [self.current_image drawInRect:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
     CGContextSetLineCap(currentContext, kCGLineCapRound);
     CGContextSetLineWidth(currentContext, _lineWidth);
@@ -156,7 +162,6 @@
     }
     
     CGContextSetStrokeColorWithColor(currentContext, _lineColor);
-    //CGContextSetRGBStrokeColor(currentContext, red, green, green, alpha);
     CGContextBeginPath(currentContext);
     CGContextMoveToPoint(currentContext, pts[0].x, pts[0].y);
     

@@ -23,6 +23,12 @@
     }
     self.window.rootViewController = self.splashScreen;
     [self.window makeKeyAndVisible];
+    
+    
+    //Initialize the application database asynchronously, if done synchronously the main thread will be blocked and application launch time increases
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [AppDatabase instance];
+    });
     return YES;
 }
 

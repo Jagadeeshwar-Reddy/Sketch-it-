@@ -8,6 +8,7 @@
 
 #import "MJRMainMenuVC.h"
 #import "MJRMenuCell.h"
+#import "MJRImageGalleryVC.h"
 
 #define kMenuItems [NSArray arrayWithObjects:@"Pages",@"Gallery",@"Shapes", nil]
 @interface MJRMainMenuVC ()
@@ -23,6 +24,11 @@
     [self.revealController setMinimumWidth:200.0f maximumWidth:250.0f forViewController:self];
     
     self.view.backgroundColor=_menu_tableview.backgroundColor=[UIColor colorWithPatternImage:[UIImage imageNamed:@"pattern_bg"]];
+    
+    
+    [self.pickFrom_camera_btn setBackgroundImage:[self.pickFrom_camera_btn.currentBackgroundImage stretchableImageWithLeftCapWidth:9 topCapHeight:45]forState: UIControlStateNormal];
+    [self.pickFrom_Library_btn setBackgroundImage:[self.pickFrom_Library_btn.currentBackgroundImage stretchableImageWithLeftCapWidth:9 topCapHeight:45]forState: UIControlStateNormal];
+
 }
 
 - (void)didReceiveMemoryWarning
@@ -48,7 +54,6 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"MJRMenuCell";
-
     
     MJRMenuCell *cell = (MJRMenuCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
@@ -117,10 +122,31 @@
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
     
+    switch (indexPath.row) {
+        case 0:
+        {
+            self.revealController.frontViewController=_paintboard_navigController;
+            [self.revealController showViewController:_paintboard_navigController animated:YES completion:^(BOOL finished){}];
+        }
+            break;
+        case 1:
+        {
+            MJRImageGalleryVC *gallery = [[MJRImageGalleryVC alloc]initWithNibName:@"MJRImageGalleryVC" bundle:[NSBundle mainBundle]];
+            UINavigationController *gallery_navg_controller = [[UINavigationController alloc] initWithRootViewController:gallery];
+            self.revealController.frontViewController=gallery_navg_controller;
+            
+            [self.revealController showViewController:gallery_navg_controller animated:YES completion:^(BOOL finished) {}];            
+        }
+            break;
+        default:
+            break;
+    }
     
-    [self.revealController showViewController:self.revealController.frontViewController animated:YES completion:^(BOOL finished) {
-        
-    }];
 }
 
+- (void)viewDidUnload {
+    [self setPickFrom_camera_btn:nil];
+    [self setPickFrom_Library_btn:nil];
+    [super viewDidUnload];
+}
 @end

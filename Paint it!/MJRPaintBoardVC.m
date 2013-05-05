@@ -56,6 +56,8 @@ typedef enum ColorPicker {
         self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:revealImagePortrait landscapeImagePhone:revealImageLandscape style:UIBarButtonItemStylePlain target:self action:@selector(showLeftView:)];
     }
 
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(saveCurrentImage:)];
+    
     [self configureAwesomeMenuButton];
     
     _selected_bg_color_indicator.backgroundColor=kDefaultBackgroundColor;
@@ -66,6 +68,7 @@ typedef enum ColorPicker {
     
     curr_brush_width=kDefaultBrushWidth;
     
+    [(DrawingBoard *)self.view setBackgroundColor:[UIColor whiteColor]];
     [(DrawingBoard *)self.view setLineColor:kDefaultBrushColor.CGColor];
     [(DrawingBoard *)self.view setLineWidth:curr_brush_width];
     [(DrawingBoard *)self.view setRenderPathMode:kToolPen];
@@ -170,6 +173,41 @@ typedef enum ColorPicker {
     }
 }
 
+-(void)saveCurrentImage:(id)sender{
+    UIImage *current_image = [(DrawingBoard *)self.view imageFromBoardCurrentState];
+    
+    if (!current_image) return;
+    
+    
+    MBProgressHUD *hud=[MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.mode = MBProgressHUDModeAnnularDeterminate;
+    hud.labelText = @"Saving...";
+    
+    [hud showAnimated:YES whileExecutingBlock:^{
+        float progress = 0.0f;
+        
+        [[AppDatabase instance] addImageToDatabase:[(DrawingBoard *)self.view imageFromBoardCurrentState]imageName:@"my..img" comment:@"Hello this is my first paint!, have a look at it........."];
+        
+        while (progress < 1.0f)
+        {
+            progress += 0.01f;
+            hud.progress = progress;
+            usleep(20000);
+            
+            if (progress>=0.98) {
+                //hud.mode = MBProgressHUDModeCustomView;
+                
+                //hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
+                //hud.labelText = @"Saved!";
+                
+                //[hud hide:YES afterDelay:2];
+            }
+        }
+
+    } completionBlock:^{
+
+    }];
+}
 
 - (void)didReceiveMemoryWarning
 {

@@ -7,8 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MJRPaintBoardVC.h"
 
 @interface MJRMainMenuVC : UIViewController
 @property (weak, nonatomic) IBOutlet UITableView *menu_tableview;
 
+@property (weak, nonatomic) IBOutlet UIButton *pickFrom_camera_btn;
+
+@property (weak, nonatomic) IBOutlet UIButton *pickFrom_Library_btn;
+@property (strong, nonatomic) UINavigationController *paintboard_navigController;
 @end

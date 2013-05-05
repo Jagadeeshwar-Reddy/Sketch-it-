@@ -138,9 +138,10 @@
 
 -(void)movetohomescreen{
     // Step 1: Create your controllers.
-    UINavigationController *frontViewController = [[UINavigationController alloc] initWithRootViewController:[[MJRPaintBoardVC alloc] init]];
+    MJRPaintBoardVC *paint_board=[[MJRPaintBoardVC alloc] initWithNibName:@"MJRPaintBoardVC" bundle:[NSBundle mainBundle]];
+    UINavigationController *frontViewController = [[UINavigationController alloc] initWithRootViewController:paint_board];
     MJRMainMenuVC *leftViewController = [[MJRMainMenuVC alloc] initWithNibName:@"MJRMainMenuVC" bundle:[NSBundle mainBundle]];
-    
+    leftViewController.paintboard_navigController=frontViewController;
     // Step 2: Configure an options dictionary for the PKRevealController if necessary - in most cases the default behaviour should suffice. See PKRevealController.h for more option keys.
     
      NSDictionary *options = @{

@@ -16,5 +16,8 @@
     #import "Macros.h"
     #import "MJRAppDelegate.h"
     #import "MBProgressHUD.h"
+    #import "NSDateFormatter+Additions.h"
+    #import "AppDatabase.h"
+    #import "NSData+Helper.h"
 
 #endif
